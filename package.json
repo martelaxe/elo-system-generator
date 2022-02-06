@@ -67,7 +67,11 @@
       "**/hardhat-ts/**"
     ]
   },
-  "dependencies": {},
+  "dependencies": {
+    "@superfluid-finance/ethereum-contracts": "^1.0.0-rc.11",
+    "add": "^2.0.6",
+    "yarn": "^1.22.17"
+  },
   "devDependencies": {
     "husky": "^7.0.2"
   }

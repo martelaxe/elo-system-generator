@@ -20,13 +20,135 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   await deploy("YourContract", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
-    // args: [ "Hello", ethers.utils.parseEther("1.5") ],
+    args: [],
     log: true,
     waitConfirmations: 5,
   });
 
+
+  await deploy("TradeableCashflow", {
+    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
+    from: deployer,
+    args: ['0x5EFE2D8094D23d1f5C42f5Bdc8fE501B1A4C1E66',
+      "Holy Grail",
+      "GRAIL",
+      '0xF0d7d1D47109bA426B9D8A3Cde1941327af1eea3',
+      '0xECa8056809e7e8db04A8fF6e4E82cD889a46FE2F',
+      '0xe3cb950cb164a31c66e32c320a800d477019dcff'],
+    log: true,
+    waitConfirmations: 5,
+  });
+
+
+
+
+  await deploy("EloSystemCreator", {
+    from: deployer,
+    args: [],
+    log: true,
+    waitConfirmations: 5
+
+  });
+
+
+  // const EloSystemCreator = await ethers.getContract("EloSystemCreator", deployer);
+
+  // await EloSystemCreator.deployEloTableDefinition(1200);
+
+  // await deploy("EloToken", {
+  //   from: deployer,
+  //   args: [],
+  //   log: true,
+  //   waitConfirmations: 5
+
+  // });
+
+  // const EloTokenAddress = await EloTokenAddress.address;
+
+
+  // await deploy("EloTableDefinition", {
+  //   from: deployer,
+  //   args: [],
+  //   log: true,
+  //   waitConfirmations: 5
+
+  // });
+
+
+
+  // const EloDefinitionContract = await ethers.getContractAt("EloTableDefinition", "0x7D3B83DAd01E159Ee0845B1984ad9feea2131E49");
+
+  // await EloDefinitionContract.addEloAccount(0x5EFE2D8094D23d1f5C42f5Bdc8fE501B1A4C1E66);
+
+
+
+
+
+  // const tableToGenAddress = await EloSystemCreator.tableToGenAddress(deployer);
+
+  // const tokenToTableAddress = await EloSystemCreator.tokenToTableAddress(tableToGenAddress);
+
+  // const EloDefinition = await ethers.getContractAt("EloTableDefinition", "tableToGenAddress");
+
+  // console.log(tableToGenAddress);
+
+  // console.log(tokenToTableAddress);
+
+
+
+
+
+
+
+
+
+
+
+
+  // const TradeableCashflow = await ethers.getContract("TradeableCashflow", deployer);
+
+
+  // const TradeableCashflow = await ethers.getContractAt("TradeableCashflow", "0xcBc5A14A9aE93D9C37D9E710E6d4c88242fD7F3e");
+  // console.log(TradeableCashflow.address)
+  // await TradeableCashflow.addFlow("0x96A7D9af9c21F5C031dF3Ff1228697edd7e58f1e");
+
+
   // Getting a previously deployed contract
-  const YourContract = await ethers.getContract("YourContract", deployer);
+  // const YourContract = await ethers.getContract("YourContract", deployer);
+  /*  await YourContract.setPurpose("Hello");
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // Getting a previously deployed contract
+  // const YourContract = await ethers.getContract("YourContract", deployer);
   /*  await YourContract.setPurpose("Hello");
   
     To take ownership of yourContract using the ownable library uncomment next line and add the 
@@ -76,4 +198,4 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   //   console.error(error);
   // }
 };
-module.exports.tags = ["YourContract"];
+module.exports.tags = ["TradeableCashflow", "EloSystemCreator", "YourContract", "EloTableDefinition"];

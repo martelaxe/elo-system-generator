@@ -29,10 +29,15 @@ import externalContracts from "./contracts/external_contracts";
 // contracts
 import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor, Web3ModalSetup } from "./helpers";
-import { Home, ExampleUI, Hints, Subgraph } from "./views";
+import { Home, ExampleUI, Hints, Subgraph, EloTable } from "./views";
 import { useStaticJsonRPC } from "./hooks";
 
-const { ethers } = require("ethers");
+
+
+import EloDefinition from "./contracts/EloTableDefinition.json"
+import { ConsoleSqlOutlined } from "@ant-design/icons";
+import { DAppProvider, ChainId, useContractFunction } from "@usedapp/core"
+const { ethers, utils } = require("ethers");
 /*
     Welcome to 🏗 scaffold-eth !
 
@@ -53,7 +58,7 @@ const { ethers } = require("ethers");
 */
 
 /// 📡 What chain are your contracts deployed to?
-const initialNetwork = NETWORKS.localhost; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+const initialNetwork = NETWORKS.kovan; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 // 😬 Sorry for all the console logging
 const DEBUG = true;
@@ -167,7 +172,52 @@ function App(props) {
   ]);
 
   // keep track of a variable from the contract in the local React state:
-  const purpose = useContractReader(readContracts, "YourContract", "purpose");
+  const EloDefinitionAddress = useContractReader(readContracts, "EloSystemCreator", "tableToGenAddress", [address]);
+
+  const listOfTablesOfUser = useContractReader(readContracts, "EloSystemCreator", "getTablesByOwner", [address]);
+  const eloTableList = useContractReader(readContracts, "EloSystemCreator", "returnTable");
+
+  const EloDefinitionABI = EloDefinition.abi
+  const EloDefinitionInterface = new utils.Interface(EloDefinitionABI)
+
+  // console.log()
+
+  // console.log("##################################");
+  // console.log(listOfTablesOfUser)
+  // console.log(eloTableList)
+
+  let userTables = []; // Specific list of tables for user 
+
+  if (listOfTablesOfUser) {
+    console.log("test")
+    for (let i = 0; i < listOfTablesOfUser.length; i++) {
+      userTables.push(eloTableList[parseInt(listOfTablesOfUser[i]._hex)])
+    }
+    console.log("##############");
+    console.log(userTables);
+  }
+
+
+
+
+  var purpose = "";
+  // if (EloDefinitionAddress) {
+  //   console.log("##################################");
+  //   console.log(EloDefinitionAddress);
+  //   const EloDefinitionContract = new ContractBuilder(EloDefinitionAddress, EloDefinitionInterface);
+  //   console.log(EloDefinitionContract.address);
+  //   // console.log(`Lista de tablas ${listOfTablesOfUuser}`);
+
+
+  // }
+
+
+
+
+
+
+
+
 
   /*
   const addressFromENS = useResolveName(mainnetProvider, "austingriffith.eth");
@@ -187,19 +237,28 @@ function App(props) {
       yourMainnetBalance &&
       readContracts &&
       writeContracts &&
-      mainnetContracts
+      mainnetContracts &&
+      userTables
     ) {
-      console.log("_____________________________________ 🏗 scaffold-eth _____________________________________");
-      console.log("🌎 mainnetProvider", mainnetProvider);
-      console.log("🏠 localChainId", localChainId);
-      console.log("👩‍💼 selected address:", address);
-      console.log("🕵🏻‍♂️ selectedChainId:", selectedChainId);
-      console.log("💵 yourLocalBalance", yourLocalBalance ? ethers.utils.formatEther(yourLocalBalance) : "...");
-      console.log("💵 yourMainnetBalance", yourMainnetBalance ? ethers.utils.formatEther(yourMainnetBalance) : "...");
-      console.log("📝 readContracts", readContracts);
-      console.log("🌍 DAI contract on mainnet:", mainnetContracts);
-      console.log("💵 yourMainnetDAIBalance", myMainnetDAIBalance);
-      console.log("🔐 writeContracts", writeContracts);
+      // console.log("_____________________________________ 🏗 scaffold-eth _____________________________________");
+      // console.log("🌎 mainnetProvider", mainnetProvider);
+      // console.log("🏠 localChainId", localChainId);
+      // console.log("👩‍💼 selected address:", address);
+      // console.log("🕵🏻‍♂️ selectedChainId:", selectedChainId);
+      // console.log("💵 yourLocalBalance", yourLocalBalance ? ethers.utils.formatEther(yourLocalBalance) : "...");
+      // console.log("💵 yourMainnetBalance", yourMainnetBalance ? ethers.utils.formatEther(yourMainnetBalance) : "...");
+      // console.log("📝 readContracts", readContracts);
+      // console.log("🌍 DAI contract on mainnet:", mainnetContracts);
+      // console.log("💵 yourMainnetDAIBalance", myMainnetDAIBalance);
+      // console.log("🔐 writeContracts", writeContracts);
+
+
+      // if (listOfTablesOfUser) {
+      //   console.log("test")
+      //   for (let i = 0; i < listOfTablesOfUser.length; i++) {
+      //     console.log(eloTableList[parseInt(listOfTablesOfUser[i]._hex)])
+      //   }
+      // }
     }
   }, [
     mainnetProvider,
@@ -245,6 +304,7 @@ function App(props) {
   const faucetAvailable = localProvider && localProvider.connection && targetNetwork.name.indexOf("local") !== -1;
 
   return (
+
     <div className="App">
       {/* ✏️ Edit the header and change the title to your project name */}
       <Header />
@@ -275,6 +335,9 @@ function App(props) {
         <Menu.Item key="/subgraph">
           <Link to="/subgraph">Subgraph</Link>
         </Menu.Item>
+        {/* <Menu.Item key="/elotable">
+          <Link to="/elotable">Elo table</Link>
+        </Menu.Item> */}
       </Menu>
 
       <Switch>
@@ -319,8 +382,26 @@ function App(props) {
             writeContracts={writeContracts}
             readContracts={readContracts}
             purpose={purpose}
+            userTables={userTables}
           />
         </Route>
+
+        <Route path="/elotable">
+          <EloTable
+            address={address}
+            userSigner={userSigner}
+            mainnetProvider={mainnetProvider}
+            localProvider={localProvider}
+            yourLocalBalance={yourLocalBalance}
+            price={price}
+            tx={tx}
+            writeContracts={writeContracts}
+            readContracts={readContracts}
+            purpose={purpose}
+            userTables={userTables}
+          />
+        </Route>
+
         <Route path="/mainnetdai">
           <Contract
             name="DAI"
