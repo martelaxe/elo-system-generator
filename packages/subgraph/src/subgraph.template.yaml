@@ -3,23 +3,42 @@ schema:
   file: ./src/schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: YourContract
+    name: EloSystemCreator
     network: localhost
     source:
-      address: "{{localhost_YourContractAddress}}"
-      abi: YourContract
+      address: "{{localhost_EloSystemCreatorAddress}}"
+      abi: EloSystemCreator
       startBlock: 1
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - Purpose
-        - Sender
+        - Directory
       abis:
-        - name: YourContract
-          file: ./abis/localhost_YourContract.json
+        - name: EloSystemCreator
+          file: ./abis/localhost_EloSystemCreator.json
       eventHandlers:
-        - event: SetPurpose(address,string)
-          handler: handleSetPurpose
-      file: ./src/mapping.ts
+        - event: NewTable(address,address)
+          handler: handleNewEloDefinition
+      file: ./src/mappings/eloSystemCreator.ts
+templates:
+  - name: EloTableDefinition
+    kind: ethereum/contract
+    network: localhost
+    source:
+      abi: EloTableDefinition
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/eloTableDefinition.ts
+      entities:
+        - EloAccount
+      abis:
+        - name: EloTableDefinition
+          file: ./abis/localhost_EloTableDefinition.json
+      eventHandlers:
+        - event: AddAccount(address,uint256,address)
+          handler: handleAddAccount
+

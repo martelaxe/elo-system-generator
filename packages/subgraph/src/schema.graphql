@@ -13,3 +13,32 @@ type Sender @entity {
   createdAt: BigInt!
   purposeCount: BigInt!
 }
+
+
+type Directory @entity {
+  id: ID!
+  addressTable: Bytes!
+  createdAt: BigInt!
+  eloAccounts: [EloAccount!] @derivedFrom(field: "ownerTable")
+}
+
+type EloAccount @entity {
+  id: ID!
+  address: Bytes!
+  ownerTable: Directory!
+  createdAt: BigInt!
+  startingElo: BigInt!
+}
+
+
+
+
+# type User {
+#   name: String!
+#   cars: [Car!] @relation
+# }
+
+# type Car {
+#   plate: String!
+#   owner: User!
+# }

@@ -10,6 +10,12 @@ contract EloTableDefinition {
 
     mapping(address => uint256) public eloAddressToElo;
 
+    event AddAccount(
+        address addedAccount,
+        uint256 startingElo,
+        address addresTable
+    );
+
     address[] public eloAccounts;
     uint256 startingElo;
     string public tableName;
@@ -27,6 +33,7 @@ contract EloTableDefinition {
     function addEloAccount(address _eloAddress) public {
         eloAccounts.push(_eloAddress);
         eloToken.transfer(_eloAddress, startingElo);
+        emit AddAccount(_eloAddress, startingElo, address(this));
     }
 
     function changeElo(address _winningAddress, address _losingAddress) public {

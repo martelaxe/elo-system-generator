@@ -1,21 +1,16 @@
 import { SyncOutlined } from "@ant-design/icons";
 import { utils } from "ethers";
-import { Button, Card, DatePicker, Divider, Input, Progress, Slider, Spin, Switch } from "antd";
+import { Divider, Input } from "antd";
+import { Button, Table, Typography } from "antd";
 import React, { useState } from "react";
-import { Address, Balance, Events } from "../components";
+import { gql, useQuery } from "@apollo/client";
 import { useLocation } from "react-router-dom";
-import { Contract } from "@ethersproject/contracts"
-import EloDefinition from "../contracts/EloTableDefinition.json"
-import { constants } from "ethers"
-import { useEthers, useContractFunction } from "@usedapp/core"
+
 import { AddAccounts } from "../hooks"
-export default function EloTable({
-    userSigner
+import { Address } from "../components";
+export default function EloTable(props) {
 
 
-
-
-}) {
     const [account, setAccount] = useState("loading...");
 
     const handleInputChange = (event) => {
@@ -30,12 +25,72 @@ export default function EloTable({
     console.log(location.state[0].userTable.tableName);
     console.log(location.state[0].userTable.tableAddress);
 
+    console.log(props.userTables);
 
-    const address = location.state[0].userTable.tableAddress;
+    const userSigner = props.userSigner;
+
+
+    var address = location.state[0].userTable.tableAddress;
+
+    address = address.toLowerCase();
+
+    console.log("################## LOWER CASEEEEE", address)
+
+    const EXAMPLE_GRAPHQL = `
+    {
+        directory(id: "${address}") {
+            id
+            eloAccounts {
+                id
+                address
+                createdAt
+                startingElo
+            }
+        }
+    }
+    `;
+
+
+    // const EXAMPLE_GRAPHQL = `
+    // {
+    //     directory(id: "0xBA12646CC07ADBe43F8bD25D83FB628D29C8A762"){
+    //         id
+    //         eloAccounts {
+    //             id
+    //             address
+    //             createdAt
+    //             startingElo
+    //         }   
+    //     }
+    // }
+    // `;
+
+    const EXAMPLE_GQL = gql(EXAMPLE_GRAPHQL);
+    const { loading, data } = useQuery(EXAMPLE_GQL, { pollInterval: 2500 });
+
+    const purposeColumns = [
+        {
+            title: "Elo account",
+            dataIndex: "address",
+            key: "address",
+            // render: record => <Address value={record} ensProvider={props.mainnetProvider} fontSize={16} />,
+        },
+        {
+            title: "startingElo",
+            key: "startingElo",
+            dataIndex: "startingElo",
+        },
+        {
+            title: "createdAt",
+            key: "createdAt",
+            dataIndex: "createdAt",
+            render: d => new Date(d * 1000).toISOString(),
+        },
+    ];
+
+
 
     const { addAccount, addAccountState } = AddAccounts(address, userSigner)
-
-
 
 
     const handleAddAccountSubmit = () => {
@@ -47,12 +102,10 @@ export default function EloTable({
             {/*
           ⚙️ Here is an example UI that displays and sets the purpose in your smart contract:
         */}
-            <div style={{ border: "1px solid #cccccc", padding: 16, width: 400, margin: "auto", marginTop: 64 }}>
-                <h2>Your Accounts:</h2>
+            <div style={{ border: "1px solid #cccccc", padding: 16, width: 800, margin: "auto", marginTop: 64 }}>
                 {/* <h4>List of tables : {console.log("###" + listOfTablesOfUser)}</h4> */}
 
 
-                <Divider />
                 <div style={{ margin: 8 }}>
                     <Input
                         onChange={handleInputChange}
@@ -61,8 +114,14 @@ export default function EloTable({
                         style={{ marginTop: 8 }}
                         onClick={handleAddAccountSubmit}
                     >
-                        Add New Elo Table!
+                        Add New Account!
                     </Button>
+                    <Divider />
+                    {data ? (
+                        <Table dataSource={data.directory.eloAccounts} columns={purposeColumns} rowKey="id" />
+                    ) : (
+                        <Typography>{loading ? "Loading..." : "Warning"}</Typography>
+                    )}
                 </div>
             </div>
         </div>

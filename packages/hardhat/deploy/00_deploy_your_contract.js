@@ -25,23 +25,6 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
     waitConfirmations: 5,
   });
 
-
-  await deploy("TradeableCashflow", {
-    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
-    from: deployer,
-    args: ['0x5EFE2D8094D23d1f5C42f5Bdc8fE501B1A4C1E66',
-      "Holy Grail",
-      "GRAIL",
-      '0xF0d7d1D47109bA426B9D8A3Cde1941327af1eea3',
-      '0xECa8056809e7e8db04A8fF6e4E82cD889a46FE2F',
-      '0xe3cb950cb164a31c66e32c320a800d477019dcff'],
-    log: true,
-    waitConfirmations: 5,
-  });
-
-
-
-
   await deploy("EloSystemCreator", {
     from: deployer,
     args: [],
@@ -50,8 +33,26 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
 
   });
 
+  const EloSystemCreatorContract = await ethers.getContractAt("EloSystemCreator", deployer);
 
-  // const EloSystemCreator = await ethers.getContract("EloSystemCreator", deployer);
+  await deploy("EloToken", {
+    from: deployer,
+    args: [EloSystemCreatorContract.address],
+    log: true,
+    waitConfirmations: 5
+
+  });
+
+  const EloTokenContract = await ethers.getContractAt("EloToken", deployer);
+
+  await deploy("EloTableDefinition", {
+    from: deployer,
+    args: [1200, EloTokenContract.address, "tableName"],
+    log: true,
+    waitConfirmations: 5
+
+  });
+
 
   // await EloSystemCreator.deployEloTableDefinition(1200);
 

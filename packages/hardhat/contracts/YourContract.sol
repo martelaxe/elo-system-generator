@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol
 
 contract YourContract is Ownable {
-    // event SetPurpose(address sender, string purpose);
+    event SetPurpose(address sender, string purpose);
 
     string public purpose = "Building Unstoppable Apps!!!";
 
@@ -18,7 +18,7 @@ contract YourContract is Ownable {
     function setPurpose(string memory newPurpose) public onlyOwner {
         purpose = newPurpose;
         console.log(msg.sender, "set purpose to", purpose);
-        // emit SetPurpose(msg.sender, purpose);
+        emit SetPurpose(msg.sender, purpose);
     }
 
     function setTest(string memory test) public pure returns (string memory) {
