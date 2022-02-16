@@ -16,6 +16,7 @@ const highlight = {
 };
 
 function Subgraph(props) {
+
   function graphQLFetcher(graphQLParams) {
     return fetch(props.subgraphUri, {
       method: "post",
@@ -26,19 +27,13 @@ function Subgraph(props) {
 
   const EXAMPLE_GRAPHQL = `
   {
-    purposes(first: 25, orderBy: createdAt, orderDirection: desc) {
-      id
-      purpose
-      createdAt
-      sender {
-        id
-      }
-    }
-    senders {
+    eloAccounts(first: 25, orderBy: createdAt, orderDirection: desc) {
       id
       address
-      purposeCount
+      createdAt
+			startingElo
     }
+    
   }
   `;
   const EXAMPLE_GQL = gql(EXAMPLE_GRAPHQL);
@@ -130,6 +125,7 @@ function Subgraph(props) {
         <span className="highlight" style={highlight}>
           yarn graph-ship-local
         </span>
+
       </div>
 
       <div style={{ margin: 32 }}>
